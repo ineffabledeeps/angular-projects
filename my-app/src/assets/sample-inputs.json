@@ -1,0 +1,18 @@
+[
+  { "key": "firstName", "type": "input", "props": { "label": "First Name","required": true } },
+  { "key": "lastName", "type": "input", "props": { "label": "Last Name" },"expressions":{"props.disabled":"!model.firstName"} },
+  {
+    "key": "city",
+    "type": "input",
+    "props": { "label": "City","minLength":3}
+  },
+  {
+    "key": "area",
+    "type": "textarea",
+    "props": { "label": "Where?" },
+    "expressions": {
+      "hide": "!model.city",
+      "props.label": "'Where do you live in ' + model.city + '?'"
+    }
+  }
+]
