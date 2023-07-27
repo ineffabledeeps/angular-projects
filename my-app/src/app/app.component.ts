@@ -1,28 +1,43 @@
-import { Component } from '@angular/core';
+import { Component,OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { FormlyFieldConfig } from '@ngx-formly/core/public_api';
+import { FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core/public_api';
+import { AppService } from './app.service';
+
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  form = new FormGroup({});
-  model = { email: 'email@gmail.com' };
-  fields: FormlyFieldConfig[] = [
-    {
-      key: 'email',
-      type: 'input',
-      props: {
-        label: 'Email address',
-        placeholder: 'Enter email',
-        required: true,
-      }
-    }
-  ];
+export class AppComponent implements OnDestroy {
 
-  onSubmit(model: object) {
-    console.log(model);
+  private destroy$: Subject<any> = new Subject<any>();
+  form = new FormGroup({});
+  options: FormlyFormOptions = {};
+  model : any;
+  fields: FormlyFieldConfig[]=[];
+  
+  constructor(private appService: AppService){
+    this.appService
+    .getAppData()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(([model,fields])=>{
+      this.fields = fields;
+      this.model = model;
+      console.log(model);
+    })
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+  
+  onSubmit() {
+    if(this.form.valid){
+      alert(JSON.stringify(this.model))
+    }
   }
 }
